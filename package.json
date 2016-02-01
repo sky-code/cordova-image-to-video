@@ -1,0 +1,22 @@
+{
+  "name": "cordova-image-to-video",
+  "version": "0.0.1-dev",
+  "description": "Cordova image to video plugin",
+  "cordova": {
+    "id": "ua.com.cqr.cordova-image-to-video",
+    "platforms": [
+      "ios"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sky-code/cordova-image-to-video"
+  },
+  "keywords": [
+    "cordova",
+    "ecosystem:cordova",
+    "cordova-ios"
+  ],
+  "author": "Sky",
+  "license": "MIT"
+}

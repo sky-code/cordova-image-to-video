@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="ua.com.cqr.cordova-image-to-video" version="0.1.0" xmlns="http://apache.org/cordova/ns/plugins/1.0">
+  <name>Image To Video</name>
+  
+  <js-module name="ImageToVideo" src="www/image-to-video.js">
+    <clobbers target="ImageToVideo" />
+  </js-module>
+  <js-module name="ImageToVideoOptions" src="www/image-to-video-options.js">
+    <clobbers target="ImageToVideoOptions" />
+  </js-module>
+  
+  <platform name="ios">
+    <!-- <hook type="after_plugin_install" src="hooks/add_swift_support.js" /> -->
+    <config-file parent="/*" target="config.xml">
+      <feature name="ImageToVideo">
+        <param name="ios-package" value="CDVImageToVideo" />
+      </feature>
+    </config-file>
+    <source-file src="src/ios/CDVImageToVideo.swift" />
+  </platform>
+</plugin>
