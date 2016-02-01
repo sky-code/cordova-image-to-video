@@ -10,7 +10,6 @@
   </js-module>
   
   <platform name="ios">
-    <!-- <hook type="after_plugin_install" src="hooks/add_swift_support.js" /> -->
     <config-file parent="/*" target="config.xml">
       <feature name="ImageToVideo">
         <param name="ios-package" value="CDVImageToVideo" />
