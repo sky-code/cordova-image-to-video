@@ -5,6 +5,7 @@ import Foundation
     let message = "Hello !";
 
     let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: message);
-    commandDelegate.sendPluginResult(pluginResult, callbackId:command.callbackId);
+    // commandDelegate.sendPluginResult(pluginResult, callbackId:command.callbackId);
+    self.commandDelegate!.sendPluginResult(pluginResult, callbackId:command.callbackId);
   }
 }
