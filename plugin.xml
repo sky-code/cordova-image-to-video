@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin id="ua.com.cqr.cordova-image-to-video" version="0.1.0" xmlns="http://apache.org/cordova/ns/plugins/1.0">
+<plugin id="ua.cqr.cordova-image-to-video" version="0.1.0" xmlns="http://apache.org/cordova/ns/plugins/1.0">
   <name>Image To Video</name>
+  <description>iOS Cordova plugin for converting images (frames) to video</description>
   
   <js-module name="ImageToVideo" src="www/image-to-video.js">
     <clobbers target="ImageToVideo" />

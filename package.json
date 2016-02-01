@@ -3,7 +3,7 @@
   "version": "0.0.1-dev",
   "description": "Cordova image to video plugin",
   "cordova": {
-    "id": "ua.com.cqr.cordova-image-to-video",
+    "id": "ua.cqr.cordova-image-to-video",
     "platforms": [
       "ios"
     ]
