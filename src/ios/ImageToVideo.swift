@@ -14,13 +14,13 @@ import AVFoundation
     self.commandDelegate!.sendPluginResult(pluginResult, callbackId:command.callbackId);
   }
 
-  func ConvertFramesToImages(frames: [String]) -> [UIImage] {
-    print("Hello World! :-)");
-	let images = [UIImage]();
-	// let images = [UIImage](count: frames.count, repeatedValue: nil);
+  func UIImageArrayFromBase64Frames(frames: [String]) -> [UIImage] {
+    NSLog("exec: UIImageArrayFromBase64Frames");
+	var images = [UIImage]();
+	// var images = [UIImage](count: frames.count, repeatedValue: nil);
 
     for (index, frame) in frames.enumerate() {
-      //var frame:String = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC";
+      // var frame:String = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC";
       var dataUrl = NSURL(string: frame);
       if dataUrl == nil {
 	    NSLog("dataUrl for frame \(index) is nil");
@@ -29,9 +29,14 @@ import AVFoundation
 	  var data = NSData(contentsOfURL: dataUrl!);
 	  if data == nil {
 	  	  NSLog("data for frame \(index) is nil");
+		  continue
 	  }
-	  let image : UIImage = UIImage(data: data);
-	  images.append(image);
+	  var image : UIImage = UIImage(data: data);
+	  if image == nil {
+	  	  NSLog("image for frame \(index) is nil");
+		  continue;
+	  }
+	  images.append(image!);
     }
 	return images;
   }
