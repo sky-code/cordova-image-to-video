@@ -8,7 +8,7 @@ import AVFoundation
 	let height = command.argumentAtIndex(2) as! Int
 	let frameRate = command.argumentAtIndex(3) as! Int
 
-	self.startConverting(frames: frames, width: width, height: height, frameRate: frameRate);
+	self.startConverting(frames, width: width, height: height, frameRate: frameRate);
 
 	let message = "Hello !";
     let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: message);
@@ -18,31 +18,44 @@ import AVFoundation
   func startConverting(frames: [String], width: Int, height: Int, frameRate: Int){
     var maybeError: NSError?
     let fileManager = NSFileManager.defaultManager()
-    let docDirectory = NSHomeDirectory().stringByAppendingPathComponent("Documents")
-    let videoOutputPath = docDirectory.stringByAppendingPathComponent("instagram.mp4")
+    let docDirectory = (NSHomeDirectory() as NSString).stringByAppendingPathComponent("Documents")
 
-    if (!fileManager.removeItemAtPath(videoOutputPath, error: &maybeError)) {
-        NSLog("Umable to delete file: %@", maybeError!.localizedDescription)
-    }
+    let videoOutputPath = (docDirectory as NSString).stringByAppendingPathComponent("instagram.mp4")
+
 	// prepare complete 
 
-	let videoWriter = AVAssetWriter(
-        URL: NSURL(fileURLWithPath: videoOutputPath),
-        fileType: AVFileTypeMPEG4,
-        error: &maybeError
-    )
+  	let videoWriter: AVAssetWriter!
+    do {
+      videoWriter = try AVAssetWriter(
+
+              URL: NSURL(fileURLWithPath: videoOutputPath),
+
+              fileType: AVFileTypeMPEG4)
+    } catch var error as NSError {
+      maybeError = error
+      videoWriter = nil
+    }
 
 	var images = self.UIImageArrayFromBase64Frames(frames);
-	var assetWriterInput = self.createAVAssetWriterInput(width, height);
+	var assetWriterInput = self.createAVAssetWriterInput(width, height: height);
+
 
 	// var adaptorAttributes = [kCVPixelBufferPixelFormatTypeKey:kCVPixelFormatType_32ARGB,
+
     //                             kCVPixelBufferWidthKey:width,
+
     //                             kCVPixelBufferHeightKey:height]
+
+
 
 	var adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: assetWriterInput, sourcePixelBufferAttributes: nil)
 
+
+
     videoWriter.addInput(assetWriterInput)
+
     videoWriter.startWriting()
+
     videoWriter.startSessionAtSourceTime(kCMTimeZero)
 
 	var buffer: CVPixelBufferRef
@@ -50,91 +63,161 @@ import AVFoundation
 	for (index, image) in images.enumerate() {
 	  var img = image.CGImage;
 	  let frameSize = CGSizeMake(CGFloat(CGImageGetWidth(img)), CGFloat(CGImageGetHeight(img)))
-	  buffer = self.pixelBufferFromCGImage(img: img, frameSize: frameSize)
+
+	  buffer = self.pixelBufferFromCGImage(img!, frameSize: frameSize)
+
 	  
-	  var frameTime = CMTimeMake(1, frameRate)
-	  var lastTime = CMTimeMake(index, frameRate)
+
+	  let fps: Int32 = Int32(frameRate)
+
+	  var frameTime = CMTimeMake(1, fps)
+
+	  var lastTime = CMTimeMake(Int64(index), fps)
+
 	  var presentTime = CMTimeAdd(lastTime, frameTime)
+
 	  
+
 	  self.waitForAVAssetWriterInput(adaptor.assetWriterInput);
 
+
+
 	  let pixelBufferAppend = adaptor.appendPixelBuffer(buffer, withPresentationTime: presentTime)
+
 	  if(!pixelBufferAppend){
+
 	  	  NSLog("appendPixelBuffer \(index) error");
+
 	  }
 
-	  if(buffer) {
-	      CVBufferRelease(buffer);
-	  }
 	}
 	assetWriterInput.markAsFinished()
-	assetWriterInput.finishWritingWithCompletionHandler { () -> Void in
-        switch assetWriterInput.status {
+
+	videoWriter.finishWritingWithCompletionHandler { () -> Void in
+
+        switch videoWriter.status {
+
         case AVAssetWriterStatus.Failed:
-            NSLog("Error: \(assetWriterInput.error)")
+
+            NSLog("Error: \(videoWriter.error)")
+
         default:
-            NSLog("Complete with status \(assetWriterInput.status)")
+
+            NSLog("Complete with status \(videoWriter.status)")
+
             // let path = self.fileUrl(fileName).path!
+
             // let content = NSFileManager.defaultManager().contentsAtPath(path)
+
             // println("Video: \(path) \(content?.length)")
+
         }
+
     }
+
   
+
   }
 
   func waitForAVAssetWriterInput(assetWriterInput: AVAssetWriterInput){
   	  if(assetWriterInput.readyForMoreMediaData){
+
 	  	  return;
+
 	  }else{
+
 	      NSLog("Error: Adaptor is not ready");
+
 	      NSThread.sleepForTimeInterval(0.2);
+
 		  self.waitForAVAssetWriterInput(assetWriterInput);
+
 	  }
+
   }
 
   func pixelBufferFromCGImage (img: CGImageRef, frameSize: CGSize) -> CVPixelBufferRef {
 
+
+
     let options = [
+
         "kCVPixelBufferCGImageCompatibilityKey": true,
+
         "kCVPixelBufferCGBitmapContextCompatibilityKey": true
+
     ]
 
-    var pixelBufferPointer = UnsafeMutablePointer<Unmanaged<CVPixelBuffer>?>.alloc(1)
 
-    let buffered:CVReturn = CVPixelBufferCreate(kCFAllocatorDefault, UInt(frameSize.width), UInt(frameSize.height), OSType(kCVPixelFormatType_32ARGB), options, pixelBufferPointer)
 
-    let lockBaseAddress = CVPixelBufferLockBaseAddress(pixelBufferPointer.memory?.takeUnretainedValue(), 0)
-    var pixelData:UnsafeMutablePointer<(Void)> = CVPixelBufferGetBaseAddress(pixelBufferPointer.memory?.takeUnretainedValue())
+    var pixelBufferPointer = UnsafeMutablePointer<CVPixelBuffer?>.alloc(1)
+
+
+
+    let buffered:CVReturn = CVPixelBufferCreate(kCFAllocatorDefault, Int(frameSize.width), Int(frameSize.height), OSType(kCVPixelFormatType_32ARGB), options, pixelBufferPointer)
+
+
+
+    let lockBaseAddress = CVPixelBufferLockBaseAddress(pixelBufferPointer.memory!, 0)
+
+    var pixelData:UnsafeMutablePointer<(Void)> = CVPixelBufferGetBaseAddress(pixelBufferPointer.memory!)
+
+
 
     let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.NoneSkipFirst.rawValue)
-    let space:CGColorSpace = CGColorSpaceCreateDeviceRGB()
 
-    var context:CGContextRef = CGBitmapContextCreate(pixelData, UInt(frameSize.width), UInt(frameSize.height), 8, CVPixelBufferGetBytesPerRow(pixelBufferPointer.memory?.takeUnretainedValue()), space, bitmapInfo)
+    let space:CGColorSpace = CGColorSpaceCreateDeviceRGB()!
+
+
+
+    var context:CGContextRef = CGBitmapContextCreate(pixelData, Int(frameSize.width), Int(frameSize.height), 8, CVPixelBufferGetBytesPerRow(pixelBufferPointer.memory!), space, CGImageAlphaInfo.PremultipliedFirst.rawValue)!
+
+
 
     CGContextDrawImage(context, CGRectMake(0, 0, frameSize.width, frameSize.height), img)
 
-    CVPixelBufferUnlockBaseAddress(pixelBufferPointer.memory?.takeUnretainedValue(), 0)
 
-    return pixelBufferPointer.memory!.takeUnretainedValue()
+
+    CVPixelBufferUnlockBaseAddress(pixelBufferPointer.memory!, 0)
+
+
+
+    return pixelBufferPointer.memory!
+
 }
 
-  func createAVAssetWriterInput(width: Int, height: Int){
-    var videoCleanApertureSettings = [AVVideoCleanApertureWidthKey:width,
+  func createAVAssetWriterInput(width: Int, height: Int) -> AVAssetWriterInput {
+    let videoCleanApertureSettings = [AVVideoCleanApertureWidthKey:width,
+
                                  AVVideoCleanApertureHeightKey:height,
+
                        AVVideoCleanApertureHorizontalOffsetKey:0,
+
                          AVVideoCleanApertureVerticalOffsetKey:0]
+
 	
-	var videoAspectRatioSettings = [AVVideoPixelAspectRatioHorizontalSpacingKey:1,
+
+	let videoAspectRatioSettings = [AVVideoPixelAspectRatioHorizontalSpacingKey:1,
+
                                   AVVideoPixelAspectRatioVerticalSpacingKey:1]
+
 	
-	var codecSettings = [AVVideoCleanApertureKey:videoCleanApertureSettings,
+
+	let codecSettings = [AVVideoCleanApertureKey:videoCleanApertureSettings,
+
                   AVVideoPixelAspectRatioKey:videoAspectRatioSettings]
+
 	
-	var videoSettings = [AVVideoCodecKey:AVVideoCodecH264,
+
+	let videoSettings = [AVVideoCodecKey:AVVideoCodecH264,
+
      AVVideoCompressionPropertiesKey:codecSettings,
+
                      AVVideoWidthKey:width,
+
                     AVVideoHeightKey:height]
-	var assetWriterInput = AVAssetWriterInput(mediaType: AVMediaTypeVideo, outputSettings: videoSettings)
+
+	let assetWriterInput = AVAssetWriterInput(mediaType: AVMediaTypeVideo, outputSettings: videoSettings as? [String:AnyObject])
 	assetWriterInput.expectsMediaDataInRealTime = true
 	return assetWriterInput
   }
@@ -146,17 +229,17 @@ import AVFoundation
 
     for (index, frame) in frames.enumerate() {
       // var frame:String = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC";
-      var dataUrl = NSURL(string: frame);
+      let dataUrl = NSURL(string: frame);
       if dataUrl == nil {
 	    NSLog("dataUrl for frame \(index) is nil");
 		continue
 	  }
-	  var data = NSData(contentsOfURL: dataUrl!);
+	  let data = NSData(contentsOfURL: dataUrl!);
 	  if data == nil {
 	  	  NSLog("data for frame \(index) is nil");
 		  continue
 	  }
-	  var image : UIImage = UIImage(data: data);
+	  let image = UIImage(data: data!);
 	  if image == nil {
 	  	  NSLog("image for frame \(index) is nil");
 		  continue;
