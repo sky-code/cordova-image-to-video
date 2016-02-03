@@ -1,5 +1,12 @@
 var exec = require('cordova/exec');
 
-exports.sayHello = function (success, error, frames, width, height, frameRate) {
-    exec(success, error, "ImageToVideo", "sayHello", [frames, width, height, frameRate]);
+exports.sayHello = function (success, error, frames, width, height, fps) {
+    var params = frames.slice();
+    var options = {
+        width: width,
+        height: height,
+        fps: fps
+    };
+    params.unshift(options);
+    exec(success, error, "ImageToVideo", "sayHello", params);
 };

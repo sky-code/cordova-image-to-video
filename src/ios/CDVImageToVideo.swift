@@ -3,15 +3,18 @@ import AVFoundation
 
 @objc(CDVImageToVideo) class CDVImageToVideo : CDVPlugin {
   func sayHello(command: CDVInvokedUrlCommand) {
-	let frames = command.argumentAtIndex(0) as! [String]
-	//for f in command.argumentAtIndex(0) {
-	//    frames.append(f)
-	//}
-	let width = Int(command.argumentAtIndex(1) as! Int64)
-	let height = Int(command.argumentAtIndex(2) as! Int64)
-	let frameRate = Int(command.argumentAtIndex(3) as! Int64)
+	let options = command.argumentAtIndex(0) as! NSDictionary
+	let width = Int(options.valueForKey("width") as! Int64)
+	let height = Int(options.valueForKey("height") as! Int64)
+	let fps = Int(options.valueForKey("fps") as! Int64)
 
-	self.startConverting(frames, width: width, height: height, frameRate: frameRate);
+	let frames = [String]()
+	for i in 1...command.count{
+		let frame = command.argumentAtIndex(i) as! String
+		frames.append(frame)
+	}
+
+	self.startConverting(frames, width: width, height: height, frameRate: fps);
 
 	let message = "Hello !";
     let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: message);
