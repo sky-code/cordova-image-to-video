@@ -3,6 +3,7 @@ import AVFoundation
 
 @objc(CDVImageToVideo) class CDVImageToVideo : CDVPlugin {
   func sayHello(command: CDVInvokedUrlCommand) {
+	NSLog("CDVImageToVideo#sayHello()")
 	let options = command.argumentAtIndex(0) as! NSDictionary
 	let width = Int(options.valueForKey("width") as! Int64)
 	let height = Int(options.valueForKey("height") as! Int64)
@@ -33,7 +34,7 @@ import AVFoundation
     self.commandDelegate!.sendPluginResult(pluginResult, callbackId:command.callbackId);
   }
 
-  func startConverting(outputFileURL: NSURL, frames: [String], width: Int, height: Int, frameRate: Int){
+  private func startConverting(outputFileURL: NSURL, frames: [String], width: Int, height: Int, frameRate: Int){
 	// prepare complete 
 
   	let videoWriter: AVAssetWriter!
@@ -109,7 +110,7 @@ import AVFoundation
     }
   }
 
-  func assetWriterInputAppendUIImage(adaptor: AVAssetWriterInputPixelBufferAdaptor, image: UIImage, presentationTime: CMTime) -> Bool {
+  private func assetWriterInputAppendUIImage(adaptor: AVAssetWriterInputPixelBufferAdaptor, image: UIImage, presentationTime: CMTime) -> Bool {
 	  let CGImg = image.CGImage!
 	  let frameSize = CGSizeMake(CGFloat(CGImageGetWidth(CGImg)), CGFloat(CGImageGetHeight(CGImg)))
 	  let buffer : CVPixelBufferRef = self.pixelBufferFromCGImage(CGImg, frameSize: frameSize)
@@ -117,7 +118,7 @@ import AVFoundation
 	  return pixelBufferAppend
   }
 
-  func assetWriterInputAppendUIImage2(pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor, image: UIImage, presentationTime: CMTime) -> Bool {
+  private func assetWriterInputAppendUIImage2(pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor, image: UIImage, presentationTime: CMTime) -> Bool {
     var appendSucceeded = true
 	autoreleasepool {
           // var pixelBuffer: Unmanaged<CVPixelBuffer>?
@@ -141,7 +142,7 @@ import AVFoundation
     return appendSucceeded
   }
 
-  func waitForAVAssetWriterInput(assetWriterInput: AVAssetWriterInput, var retryingAttempt: Int) -> Bool {
+  private func waitForAVAssetWriterInput(assetWriterInput: AVAssetWriterInput, var retryingAttempt: Int) -> Bool {
   	  if(assetWriterInput.readyForMoreMediaData){
 	  	  return true;
 	  }else{
@@ -156,7 +157,7 @@ import AVFoundation
 	  }
   }
 
-  func pixelBufferFromCGImage (img: CGImageRef, frameSize: CGSize) -> CVPixelBufferRef {
+  private func pixelBufferFromCGImage (img: CGImageRef, frameSize: CGSize) -> CVPixelBufferRef {
     // OLD METHOD
 	let options = [
 
@@ -190,7 +191,7 @@ import AVFoundation
     return pixelBufferPointer.memory!
 }
 
-  func fillPixelBufferFromImage(image: UIImage, pixelBuffer: CVPixelBufferRef) {
+  private func fillPixelBufferFromImage(image: UIImage, pixelBuffer: CVPixelBufferRef) {
     let lockStatus = CVPixelBufferLockBaseAddress(pixelBuffer, 0)
     
     let pixelData = CVPixelBufferGetBaseAddress(pixelBuffer)
@@ -215,7 +216,7 @@ import AVFoundation
     CVPixelBufferUnlockBaseAddress(pixelBuffer, 0)
   }
 
-  func createAVAssetWriterInput(width: Int, height: Int) -> AVAssetWriterInput {
+  private func createAVAssetWriterInput(width: Int, height: Int) -> AVAssetWriterInput {
     let videoCleanApertureSettings = [AVVideoCleanApertureWidthKey:width,
 
                                  AVVideoCleanApertureHeightKey:height,
@@ -251,7 +252,7 @@ import AVFoundation
 	return assetWriterInput
   }
 
-  func UIImageFromBase64DataURL(DataURL: String) -> UIImage {
+  private func UIImageFromBase64DataURL(DataURL: String) -> UIImage {
     NSLog("exec: UIImageFromBase64DataURL");
 
     // let DataURL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC";
@@ -270,7 +271,7 @@ import AVFoundation
 	return image!;
   }
 
-  func UIImageArrayFromBase64Frames(frames: [String]) -> [UIImage] {
+  private func UIImageArrayFromBase64Frames(frames: [String]) -> [UIImage] {
     NSLog("exec: UIImageArrayFromBase64Frames");
 	var images = [UIImage]();
 	// var images = [UIImage](count: frames.count, repeatedValue: nil);
@@ -297,7 +298,7 @@ import AVFoundation
 	return images;
   }
 
-  func pixelBufferFromImage(image:UIImage) -> CVPixelBufferRef{
+  private func pixelBufferFromImage(image:UIImage) -> CVPixelBufferRef{
   // looks pretty good
         let size = image.size
         
