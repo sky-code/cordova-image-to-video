@@ -11,7 +11,12 @@ TODO
 https://gist.github.com/acj/6ae90aa1ebb8cad6b47b
 https://gist.github.com/yangyi/99f347fb1616342569cf
 
+Good implementation of **pixelBufferFromImage** can be found here https://github.com/kiomega/horrorgram-ios/blob/master/Horrorgram/HorrorgramVideoMaker.swift
 
+Also interested links
+https://github.com/davidisaaclee/ViewRecorder/blob/c2422158b93c6615959f8f1d7df4d76a14d05746/ViewRecorder/ImageSequenceToVideoConverter.swift
+https://github.com/nakajijapan/teiten/blob/de25b7431ee668ef7457837819bddbd5e270ace8/teiten/Classes/MovieMakerWithImages.swift
+https://github.com/MingleChang/camera_swift/blob/778e16e79f700cba970ba899d3e16fc9b8cad3ad/camera_swift/Common/MingleChang/MCImagesToVideo.swift
 
 ## License
 
