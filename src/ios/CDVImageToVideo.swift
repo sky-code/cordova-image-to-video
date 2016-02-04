@@ -295,4 +295,46 @@ import AVFoundation
     }
 	return images;
   }
+
+  func pixelBufferFromImage(image:UIImage) -> CVPixelBufferRef{
+  // looks pretty good
+        let size = image.size
+        
+        var pixelBuffer: CVPixelBuffer?
+        let bufferOptions:CFDictionary = [
+            "kCVPixelBufferCGBitmapContextCompatibilityKey": NSNumber(bool: true),
+            "kCVPixelBufferCGImageCompatibilityKey": NSNumber(bool: true)
+        ]
+        CVPixelBufferCreate(
+            nil,
+            Int(size.width),
+            Int(size.height),
+            OSType(kCVPixelFormatType_32ARGB),
+            bufferOptions,
+            &pixelBuffer
+        )
+        
+        let managedPixelBuffer = pixelBuffer
+        
+        CVPixelBufferLockBaseAddress(managedPixelBuffer!, 0)
+        
+        let pixelData = CVPixelBufferGetBaseAddress(managedPixelBuffer!)
+        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.PremultipliedFirst.rawValue)
+        let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
+        let context = CGBitmapContextCreate(
+            pixelData,
+            Int(size.width),
+            Int(size.height),
+            8,
+            Int(4 * size.width),
+            rgbColorSpace,
+            bitmapInfo.rawValue
+        )
+        CGContextDrawImage(context, CGRectMake(0, 0, size.width, size.height), image.CGImage)
+        
+        CVPixelBufferUnlockBaseAddress(managedPixelBuffer!, 0)
+        
+        return managedPixelBuffer!
+    }
+
 }
