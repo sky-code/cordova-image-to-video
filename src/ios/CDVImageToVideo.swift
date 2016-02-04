@@ -73,21 +73,14 @@ import AVFoundation
 	  
 	  let image = self.UIImageFromBase64DataURL(frame)
 
-	  if !self.waitForAVAssetWriterInput(adaptor.assetWriterInput, 0){
+	  if !self.waitForAVAssetWriterInput(adaptor.assetWriterInput, retryingAttempt: 0){
 	  	  NSLog("assetWriterInput.readyForMoreMediaData always false")
 	  }
 
-	  let CGImg = image.CGImage
-	  let frameSize = CGSizeMake(CGFloat(CGImageGetWidth(CGImg)), CGFloat(CGImageGetHeight(CGImg)))
+	  let pixelBufferAppend = self.assetWriterInputAppendUIImage(adaptor, image: image, presentationTime: presentTime)
 
-	  let buffer : CVPixelBufferRef = self.pixelBufferFromCGImage(CGImg!, frameSize: frameSize)
-
-	  let pixelBufferAppend = adaptor.appendPixelBuffer(buffer, withPresentationTime: presentTime)
-
-	  if(!pixelBufferAppend){
-
+	  if !pixelBufferAppend{
 	  	  NSLog("appendPixelBuffer \(index) error");
-
 	  }
 
 	}
@@ -114,9 +107,14 @@ import AVFoundation
         }
 
     }
+  }
 
-  
-
+  func assetWriterInputAppendUIImage(adaptor: AVAssetWriterInputPixelBufferAdaptor, image: UIImage, presentationTime: CMTime) -> Bool {
+	  let CGImg = image.CGImage!
+	  let frameSize = CGSizeMake(CGFloat(CGImageGetWidth(CGImg)), CGFloat(CGImageGetHeight(CGImg)))
+	  let buffer : CVPixelBufferRef = self.pixelBufferFromCGImage(CGImg, frameSize: frameSize)
+	  let pixelBufferAppend = adaptor.appendPixelBuffer(buffer, withPresentationTime: presentTime)
+	  return pixelBufferAppend
   }
 
   func waitForAVAssetWriterInput(assetWriterInput: AVAssetWriterInput, retryingAttempt: Int) -> Bool {
