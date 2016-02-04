@@ -7,10 +7,11 @@ import AVFoundation
 	let width = Int(options.valueForKey("width") as! Int64)
 	let height = Int(options.valueForKey("height") as! Int64)
 	let fps = Int(options.valueForKey("fps") as! Int64)
+    
 
-	let frames = [String]()
-	for i in 1...command.count{
-		let frame = command.argumentAtIndex(i) as! String
+	var frames = [String]()
+	for i in 1...command.arguments.count{
+		let frame = command.argumentAtIndex(UInt(i)) as! String
 		frames.append(frame)
 	}
 
@@ -20,7 +21,7 @@ import AVFoundation
 	if fileManager.fileExistsAtPath(outputFileURL.path!) {
       do {
         try fileManager.removeItemAtPath(outputFileURL.path!)
-      }catch var error as NSError{
+      }catch let error as NSError{
         fatalError("Unable to delete file: \(error.localizedDescription) : \(__FUNCTION__).")
       }
     }
@@ -38,20 +39,19 @@ import AVFoundation
   	let videoWriter: AVAssetWriter!
     do {
       videoWriter = try AVAssetWriter(URL: outputFileURL, fileType: AVFileTypeMPEG4)
-    } catch var error as NSError {
-      maybeError = error
+    } catch let error as NSError {
 	  NSLog("Create AVAssetWriter error: \(error.localizedDescription)");
       videoWriter = nil
     }
 
-	var assetWriterInput = self.createAVAssetWriterInput(width, height: height);
+	let assetWriterInput = self.createAVAssetWriterInput(width, height: height);
 
 
-	var adaptorAttributes = [kCVPixelBufferPixelFormatTypeKey as String:kCVPixelFormatType_32ARGB,
-                                 kCVPixelBufferWidthKey as String:width,
-                                 kCVPixelBufferHeightKey as String:height]
+    let adaptorAttributes:[String:AnyObject]  = [kCVPixelBufferPixelFormatTypeKey as String:Int(kCVPixelFormatType_32ARGB),
+                                 kCVPixelBufferWidthKey as String:Float(width),
+                                 kCVPixelBufferHeightKey as String:Float(height)]
 
-	var adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: assetWriterInput,
+	let adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: assetWriterInput,
                                  sourcePixelBufferAttributes: adaptorAttributes)
 
     videoWriter.addInput(assetWriterInput)
@@ -113,7 +113,7 @@ import AVFoundation
 	  let CGImg = image.CGImage!
 	  let frameSize = CGSizeMake(CGFloat(CGImageGetWidth(CGImg)), CGFloat(CGImageGetHeight(CGImg)))
 	  let buffer : CVPixelBufferRef = self.pixelBufferFromCGImage(CGImg, frameSize: frameSize)
-	  let pixelBufferAppend = adaptor.appendPixelBuffer(buffer, withPresentationTime: presentTime)
+	  let pixelBufferAppend = adaptor.appendPixelBuffer(buffer, withPresentationTime: presentationTime)
 	  return pixelBufferAppend
   }
 
@@ -125,14 +125,14 @@ import AVFoundation
 
           let status: CVReturn = CVPixelBufferPoolCreatePixelBuffer(
             kCFAllocatorDefault,
-            pixelBufferAdaptor.pixelBufferPool,
+            pixelBufferAdaptor.pixelBufferPool!,
             &pixelBuffer
           )
           
 		  if status != kCVReturnSuccess {
 		  	  NSLog("error: Failed to allocate pixel buffer from pool")
 		  }
-		  let managedPixelBuffer = pixelBuffer.takeRetainedValue()
+		  let managedPixelBuffer = pixelBuffer!
           self.fillPixelBufferFromImage(image, pixelBuffer: managedPixelBuffer)
           appendSucceeded = pixelBufferAdaptor.appendPixelBuffer(managedPixelBuffer,
             withPresentationTime: presentationTime)
@@ -141,7 +141,7 @@ import AVFoundation
     return appendSucceeded
   }
 
-  func waitForAVAssetWriterInput(assetWriterInput: AVAssetWriterInput, retryingAttempt: Int) -> Bool {
+  func waitForAVAssetWriterInput(assetWriterInput: AVAssetWriterInput, var retryingAttempt: Int) -> Bool {
   	  if(assetWriterInput.readyForMoreMediaData){
 	  	  return true;
 	  }else{
@@ -152,7 +152,7 @@ import AVFoundation
 		  }
 	      NSLog("Error: Adaptor is not ready, retryingAttempt: \(retryingAttempt)")
 	      NSThread.sleepForTimeInterval(0.2)
-		  return self.waitForAVAssetWriterInput(assetWriterInput, retryingAttempt)
+		  return self.waitForAVAssetWriterInput(assetWriterInput, retryingAttempt: retryingAttempt)
 	  }
   }
 
@@ -166,13 +166,13 @@ import AVFoundation
 
     ]
 
-    var pixelBufferPointer = UnsafeMutablePointer<CVPixelBuffer?>.alloc(1)
+    let pixelBufferPointer = UnsafeMutablePointer<CVPixelBuffer?>.alloc(1)
 
-    let buffered:CVReturn = CVPixelBufferCreate(kCFAllocatorDefault, Int(frameSize.width), Int(frameSize.height), OSType(kCVPixelFormatType_32ARGB), options, pixelBufferPointer)
+    CVPixelBufferCreate(kCFAllocatorDefault, Int(frameSize.width), Int(frameSize.height), OSType(kCVPixelFormatType_32ARGB), options, pixelBufferPointer)
 
     let lockBaseAddress = CVPixelBufferLockBaseAddress(pixelBufferPointer.memory!, 0)
 
-    var pixelData:UnsafeMutablePointer<(Void)> = CVPixelBufferGetBaseAddress(pixelBufferPointer.memory!)
+    let pixelData:UnsafeMutablePointer<(Void)> = CVPixelBufferGetBaseAddress(pixelBufferPointer.memory!)
 
     let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.NoneSkipFirst.rawValue)
 
@@ -180,7 +180,8 @@ import AVFoundation
 
 	var altCVPixelBufferGetBytesPerRow = 4*CGImageGetWidth(img);
 	var recommend = CVPixelBufferGetBytesPerRow(pixelBufferPointer.memory!);
-    var context:CGContextRef = CGBitmapContextCreate(pixelData, Int(frameSize.width), Int(frameSize.height), 8, CVPixelBufferGetBytesPerRow(pixelBufferPointer.memory!), space, CGImageAlphaInfo.PremultipliedFirst.rawValue)!
+    
+    let context:CGContextRef = CGBitmapContextCreate(pixelData, Int(frameSize.width), Int(frameSize.height), 8, CVPixelBufferGetBytesPerRow(pixelBufferPointer.memory!), space, CGImageAlphaInfo.PremultipliedFirst.rawValue)!
 
     CGContextDrawImage(context, CGRectMake(0, 0, frameSize.width, frameSize.height), img)
 
@@ -196,7 +197,7 @@ import AVFoundation
     let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.PremultipliedFirst.rawValue)
     let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
     
-	var altCVPixelBufferGetBytesPerRow = 4*CGImageGetWidth(img);
+	var altCVPixelBufferGetBytesPerRow = 4*CGImageGetWidth(image.CGImage);
 	var recommend = CVPixelBufferGetBytesPerRow(pixelBuffer);
 
     let context = CGBitmapContextCreate(
@@ -206,7 +207,7 @@ import AVFoundation
       8,
       Int(4 * image.size.width),
       rgbColorSpace,
-      bitmapInfo
+      bitmapInfo.rawValue
     )
     
     CGContextDrawImage(context, CGRectMake(0, 0, image.size.width, image.size.height), image.CGImage)
