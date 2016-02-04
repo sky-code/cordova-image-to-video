@@ -77,7 +77,7 @@ import AVFoundation
 	  	  NSLog("assetWriterInput.readyForMoreMediaData always false")
 	  }
 
-	  let pixelBufferAppend = self.assetWriterInputAppendUIImage(adaptor, image: image, presentationTime: presentTime)
+	  let pixelBufferAppend = self.assetWriterInputAppendUIImage2(adaptor, image: image, presentationTime: presentTime)
 
 	  if !pixelBufferAppend{
 	  	  NSLog("appendPixelBuffer \(index) error");
@@ -117,6 +117,30 @@ import AVFoundation
 	  return pixelBufferAppend
   }
 
+  func assetWriterInputAppendUIImage2(pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor, image: UIImage, presentationTime: CMTime) -> Bool {
+    var appendSucceeded = true
+	autoreleasepool {
+          // var pixelBuffer: Unmanaged<CVPixelBuffer>?
+		  var pixelBuffer: CVPixelBuffer?
+
+          let status: CVReturn = CVPixelBufferPoolCreatePixelBuffer(
+            kCFAllocatorDefault,
+            pixelBufferAdaptor.pixelBufferPool,
+            &pixelBuffer
+          )
+          
+		  if status != kCVReturnSuccess {
+		  	  NSLog("error: Failed to allocate pixel buffer from pool")
+		  }
+		  let managedPixelBuffer = pixelBuffer.takeRetainedValue()
+          self.fillPixelBufferFromImage(image, pixelBuffer: managedPixelBuffer)
+          appendSucceeded = pixelBufferAdaptor.appendPixelBuffer(managedPixelBuffer,
+            withPresentationTime: presentationTime)
+    }
+    
+    return appendSucceeded
+  }
+
   func waitForAVAssetWriterInput(assetWriterInput: AVAssetWriterInput, retryingAttempt: Int) -> Bool {
   	  if(assetWriterInput.readyForMoreMediaData){
 	  	  return true;
@@ -133,7 +157,8 @@ import AVFoundation
   }
 
   func pixelBufferFromCGImage (img: CGImageRef, frameSize: CGSize) -> CVPixelBufferRef {
-    let options = [
+    // OLD METHOD
+	let options = [
 
         "kCVPixelBufferCGImageCompatibilityKey": true,
 
@@ -163,6 +188,31 @@ import AVFoundation
 
     return pixelBufferPointer.memory!
 }
+
+  func fillPixelBufferFromImage(image: UIImage, pixelBuffer: CVPixelBufferRef) {
+    let lockStatus = CVPixelBufferLockBaseAddress(pixelBuffer, 0)
+    
+    let pixelData = CVPixelBufferGetBaseAddress(pixelBuffer)
+    let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.PremultipliedFirst.rawValue)
+    let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
+    
+	var altCVPixelBufferGetBytesPerRow = 4*CGImageGetWidth(img);
+	var recommend = CVPixelBufferGetBytesPerRow(pixelBuffer);
+
+    let context = CGBitmapContextCreate(
+      pixelData,
+      Int(image.size.width),
+      Int(image.size.height),
+      8,
+      Int(4 * image.size.width),
+      rgbColorSpace,
+      bitmapInfo
+    )
+    
+    CGContextDrawImage(context, CGRectMake(0, 0, image.size.width, image.size.height), image.CGImage)
+    
+    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0)
+  }
 
   func createAVAssetWriterInput(width: Int, height: Int) -> AVAssetWriterInput {
     let videoCleanApertureSettings = [AVVideoCleanApertureWidthKey:width,
