@@ -1,9 +1,10 @@
 import Foundation
 import AVFoundation
 
-@objc(CDVImageToVideo) class CDVImageToVideo : CDVPlugin {
-  func sayHello(command: CDVInvokedUrlCommand) {
-	NSLog("CDVImageToVideo#sayHello()")
+@objc(CDVImageToVideo)
+class CDVImageToVideo : CDVPlugin {
+  func convert(command: CDVInvokedUrlCommand) {
+	NSLog("CDVImageToVideo#convert()")
 	let options = command.argumentAtIndex(0) as! NSDictionary
 	let width = Int(options.valueForKey("width") as! Int64)
 	let height = Int(options.valueForKey("height") as! Int64)
@@ -343,17 +344,17 @@ import AVFoundation
 
 	// This is just called if <param name="onload" value="true" /> in plugin.xml.
 	override func pluginInitialize() {
-		NSLog("#pluginInitialize()")
+		NSLog("CDVImageToVideo#pluginInitialize()")
 	}
 
 
 	override func onReset() {
-		NSLog("#onReset() | doing nothing")
+		NSLog("CDVImageToVideo#onReset() | doing nothing")
 	}
 
 
 	override func onAppTerminate() {
-		NSLog("#onAppTerminate() | doing nothing")
+		NSLog("CDVImageToVideo#onAppTerminate() | doing nothing")
 	}
 
 }

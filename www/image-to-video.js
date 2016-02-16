@@ -1,6 +1,6 @@
 var exec = require('cordova/exec');
 
-exports.sayHello = function (success, error, params/*frames, width, height, fps*/) {
+exports.convert = function (success, error, params/*frames, width, height, fps*/) {
     /*var params = frames.slice();
     var options = {
         width: width,
@@ -8,5 +8,5 @@ exports.sayHello = function (success, error, params/*frames, width, height, fps*
         fps: fps
     };
     params.unshift(options);*/
-    exec(success, error, "ImageToVideo", "sayHello", params);
+    exec(success, error, "ImageToVideo", "convert", params);
 };
