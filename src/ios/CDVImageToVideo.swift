@@ -339,4 +339,21 @@ import AVFoundation
         return managedPixelBuffer!
     }
 
+	// lifecycle logs
+
+	// This is just called if <param name="onload" value="true" /> in plugin.xml.
+	override func pluginInitialize() {
+		NSLog("#pluginInitialize()")
+	}
+
+
+	override func onReset() {
+		NSLog("#onReset() | doing nothing")
+	}
+
+
+	override func onAppTerminate() {
+		NSLog("#onAppTerminate() | doing nothing")
+	}
+
 }
