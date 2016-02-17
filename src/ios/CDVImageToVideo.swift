@@ -5,14 +5,10 @@ import AVFoundation
 class CDVImageToVideo: CDVPlugin {
     func convert(command: CDVInvokedUrlCommand) {
         NSLog("CDVImageToVideo#convert()")
-        //let options = command.argumentAtIndex(0)! as! NSDictionary
-        //let width = Int(options[0]["width"]! as! Int64)
-        //let height = Int(options[0]["height"]! as! Int64)
-        //let fps = Int(options[0]["fps"]! as! Int64)
-
-        let width = 1366
-        let height = 768
-        let fps = 30
+        let options = command.argumentAtIndex(0) as! NSDictionary
+        let width = Int(options["width"] as! NSNumber)
+        let height = Int(options["height"] as! NSNumber)
+        let fps = Int(options["fps"] as! NSNumber)
 
         var frames = [String]()
         for i in 1 ... (command.arguments.count - 1) {
@@ -32,9 +28,10 @@ class CDVImageToVideo: CDVPlugin {
         }
 
         self.startConverting(outputFileURL, frames: frames, width: width, height: height, frameRate: fps);
+        NSLog("outputFileURL: \(outputFileURL)")
 
         let message = "Hello !";
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: message);
+        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: outputFileURL.path);
         self.commandDelegate!.sendPluginResult(pluginResult, callbackId: command.callbackId);
     }
 
