@@ -17,7 +17,7 @@ class CDVImageToVideo: CDVPlugin {
         }
 
         let outputFileURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).URLByAppendingPathComponent("instagram.mp4")
-
+		self.commandDelegate!.runInBackground({
         let fileManager = NSFileManager.defaultManager()
         if fileManager.fileExistsAtPath(outputFileURL.path!) {
             do {
@@ -30,9 +30,9 @@ class CDVImageToVideo: CDVPlugin {
         self.startConverting(outputFileURL, frames: frames, width: width, height: height, frameRate: fps);
         NSLog("outputFileURL: \(outputFileURL)")
 
-        let message = "Hello !";
         let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: outputFileURL.path);
         self.commandDelegate!.sendPluginResult(pluginResult, callbackId: command.callbackId);
+		})
     }
 
     private func startConverting(outputFileURL: NSURL, frames: [String], width: Int, height: Int, frameRate: Int) {
@@ -255,8 +255,6 @@ class CDVImageToVideo: CDVPlugin {
     }
 
     private func UIImageFromBase64DataURL(DataURL: String) -> UIImage {
-        NSLog("exec: UIImageFromBase64DataURL");
-
         // let DataURL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC";
         let dataNSURL = NSURL(string: DataURL);
         if dataNSURL == nil {
