@@ -5,7 +5,7 @@ var exec = require('cordova/exec');
  * @param {function} successCallback - success callback function
  * @param {function} errorCallback - error callback function
  * @param {object} options - set of options
- * @param {string} options.videoFilePath - path for result video file, can be relative or full path url
+ * @param {string} options.filePath - path for result video file, can be relative or full path url
  * @param {number} options.width - video width
  * @param {number} options.height - video height
  * @param {number} options.fps - video fps
