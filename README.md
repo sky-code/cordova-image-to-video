@@ -18,6 +18,12 @@ https://github.com/davidisaaclee/ViewRecorder/blob/c2422158b93c6615959f8f1d7df4d
 https://github.com/nakajijapan/teiten/blob/de25b7431ee668ef7457837819bddbd5e270ace8/teiten/Classes/MovieMakerWithImages.swift
 https://github.com/MingleChang/camera_swift/blob/778e16e79f700cba970ba899d3e16fc9b8cad3ad/camera_swift/Common/MingleChang/MCImagesToVideo.swift
 
+## UISaveVideoAtPathToSavedPhotosAlbum
+
+how to add UISaveVideoAtPathToSavedPhotosAlbum feature 
+[https://github.com/deege/deegeu-ios-swift-video-camera/blob/master/deegeu-ios-swift-video-camera/ViewController.swift](github)
+maybe in future releases will be added or use this plugin [https://gitlab.com/romanvolkov/VideoToGalleryPlugin](VideoToGalleryPlugin)
+
 ## License
 
 MIT
