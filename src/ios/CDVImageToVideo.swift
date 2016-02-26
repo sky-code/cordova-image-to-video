@@ -6,6 +6,7 @@ class CDVImageToVideo: CDVPlugin {
     func convert(command: CDVInvokedUrlCommand) {
         NSLog("CDVImageToVideo#convert()")
         let options = command.argumentAtIndex(0) as! NSDictionary
+        let filePath = String(options["filePath"] as! NSString)
         let width = Int(options["width"] as! NSNumber)
         let height = Int(options["height"] as! NSNumber)
         let fps = Int(options["fps"] as! NSNumber)
@@ -16,7 +17,8 @@ class CDVImageToVideo: CDVPlugin {
             frames.append(frame)
         }
 
-        let outputFileURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).URLByAppendingPathComponent("instagram.mp4")
+        //let outputFileURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).URLByAppendingPathComponent("instagram.mp4")
+        let outputFileURL = NSURL(fileURLWithPath: filePath)
 		self.commandDelegate!.runInBackground({
         let fileManager = NSFileManager.defaultManager()
         if fileManager.fileExistsAtPath(outputFileURL.path!) {
