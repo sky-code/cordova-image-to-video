@@ -18,6 +18,8 @@ https://github.com/davidisaaclee/ViewRecorder/blob/c2422158b93c6615959f8f1d7df4d
 https://github.com/nakajijapan/teiten/blob/de25b7431ee668ef7457837819bddbd5e270ace8/teiten/Classes/MovieMakerWithImages.swift
 https://github.com/MingleChang/camera_swift/blob/778e16e79f700cba970ba899d3e16fc9b8cad3ad/camera_swift/Common/MingleChang/MCImagesToVideo.swift
 
+https://github.com/apple/swift-evolution/blob/master/proposals/0022-objc-selectors.md
+
 ## UISaveVideoAtPathToSavedPhotosAlbum
 
 how to add UISaveVideoAtPathToSavedPhotosAlbum feature 
