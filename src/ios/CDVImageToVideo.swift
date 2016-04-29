@@ -17,8 +17,8 @@ class CDVImageToVideo: CDVPlugin {
             frames.append(frame)
         }
 
-        //let outputFileURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).URLByAppendingPathComponent("instagram.mp4")
-        let outputFileURL = NSURL(fileURLWithPath: filePath)
+        let outputFileURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).URLByAppendingPathComponent("instagram.mp4")
+        //let outputFileURL = NSURL(fileURLWithPath: filePath)
 		self.commandDelegate!.runInBackground({
         let fileManager = NSFileManager.defaultManager()
         if fileManager.fileExistsAtPath(outputFileURL.path!) {
