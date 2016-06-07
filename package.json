@@ -1,9 +1,9 @@
 {
-  "name": "cordova-image-to-video",
+  "name": "cordova-plugin-media-kit",
   "version": "0.0.1-dev",
-  "description": "Cordova image to video plugin",
+  "description": "iOS Cordova plugin for converting images (frames) to video and saving video to Photo Library",
   "cordova": {
-    "id": "ua.cqr.cordova-image-to-video",
+    "id": "cordova-plugin-media-kit",
     "platforms": [
       "ios"
     ]

@@ -2,11 +2,11 @@ import Foundation
 import AVFoundation
 import Photos
 
-@objc(CDVImageToVideo)
-class CDVImageToVideo: CDVPlugin {
+@objc(CDVMediaKit)
+class CDVMediaKit: CDVPlugin {
     
     func saveVideoToPhotoLibrary(command: CDVInvokedUrlCommand) {
-        NSLog("CDVImageToVideo#saveVideoToPhotoLibrary()")
+        NSLog("CDVMediaKit#saveVideoToPhotoLibrary()")
         let options = command.argumentAtIndex(0) as! NSDictionary
         let filePath = String(options["filePath"] as! NSString)
         NSLog(filePath)
@@ -40,7 +40,7 @@ class CDVImageToVideo: CDVPlugin {
     }
     
     func convert(command: CDVInvokedUrlCommand) {
-        NSLog("CDVImageToVideo#convert()")
+        NSLog("CDVMediaKit#convert()")
         let options = command.argumentAtIndex(0) as! NSDictionary
         let filePath = String(options["filePath"] as! NSString)
         let width = Int(options["width"] as! NSNumber)
@@ -276,17 +276,17 @@ class CDVImageToVideo: CDVPlugin {
 
     // This is just called if <param name="onload" value="true" /> in plugin.xml.
     override func pluginInitialize() {
-        NSLog("CDVImageToVideo#pluginInitialize()")
+        NSLog("CDVMediaKit#pluginInitialize()")
     }
 
 
     override func onReset() {
-        NSLog("CDVImageToVideo#onReset() | doing nothing")
+        NSLog("CDVMediaKit#onReset() | doing nothing")
     }
 
 
     override func onAppTerminate() {
-        NSLog("CDVImageToVideo#onAppTerminate() | doing nothing")
+        NSLog("CDVMediaKit#onAppTerminate() | doing nothing")
     }
 
 }

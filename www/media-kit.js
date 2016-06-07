@@ -14,7 +14,7 @@ var exec = require('cordova/exec');
 exports.convert = function (successCallback, errorCallback, options, frames) {
     var args = Array.from(frames);
     args.unshift(options);
-    exec(successCallback, errorCallback, "ImageToVideo", "convert", args);
+    exec(successCallback, errorCallback, "MediaKit", "convert", args);
 };
 
 /**
@@ -27,5 +27,5 @@ exports.saveVideoToPhotoLibrary = function(successCallback, errorCallback, fileP
     var args = {
         filePath: filePath
     };
-    exec(successCallback, errorCallback, "ImageToVideo", "saveVideoToPhotoLibrary", args);
+    exec(successCallback, errorCallback, "MediaKit", "saveVideoToPhotoLibrary", args);
 };

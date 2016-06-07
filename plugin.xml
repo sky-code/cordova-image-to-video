@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin id="ua.cqr.cordova-image-to-video" version="0.1.0" xmlns="http://apache.org/cordova/ns/plugins/1.0">
-  <name>Image To Video</name>
-  <description>iOS Cordova plugin for converting images (frames) to video</description>
+<plugin id="cordova-plugin-media-kit" version="0.1.0" xmlns="http://apache.org/cordova/ns/plugins/1.0">
+  <name>Media kit</name>
+  <description>iOS Cordova plugin for converting images (frames) to video and saving video to Photo Library</description>
 
-  <js-module name="ImageToVideo" src="www/image-to-video.js">
-    <clobbers target="ImageToVideo" />
+  <js-module name="MediaKit" src="www/media-kit.js">
+    <clobbers target="MediaKit" />
   </js-module>
-  <js-module name="ImageToVideoOptions" src="www/image-to-video-options.js">
-    <clobbers target="ImageToVideoOptions" />
+  <js-module name="MediaKitOptions" src="www/media-kit-options.js">
+    <clobbers target="MediaKitOptions" />
   </js-module>
 
   <platform name="ios">
     <config-file parent="/*" target="config.xml">
-      <feature name="ImageToVideo">
-        <param name="ios-package" value="CDVImageToVideo" />
+      <feature name="MediaKit">
+        <param name="ios-package" value="CDVMediaKit" />
         <param name="onload" value="true"/>
       </feature>
     </config-file>
-    <source-file src="src/ios/CDVImageToVideo.swift" />
+    <source-file src="src/ios/CDVMediaKit.swift" />
   </platform>
 </plugin>
