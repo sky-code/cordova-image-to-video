@@ -7,8 +7,7 @@ class CDVMediaKit: CDVPlugin {
     
     func saveVideoToPhotoLibrary(command: CDVInvokedUrlCommand) {
         NSLog("CDVMediaKit#saveVideoToPhotoLibrary()")
-        let options = command.argumentAtIndex(0) as! NSDictionary
-        let filePath = String(options["filePath"] as! NSString)
+        let filePath = String(command.argumentAtIndex(0) as! NSString)
         NSLog(filePath)
         
         if filePath.isEmpty{
@@ -21,21 +20,22 @@ class CDVMediaKit: CDVPlugin {
             fileURL = NSURL(fileURLWithPath: filePath)
         }
         
+        var localIdentifier:String? = nil
         PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
             
             let createAssetRequest: PHAssetChangeRequest = PHAssetChangeRequest.creationRequestForAssetFromVideoAtFileURL(fileURL)!
-            createAssetRequest.placeholderForCreatedAsset
-            
-        }) { (success, error) -> Void in
+            let placeholder = createAssetRequest.placeholderForCreatedAsset
+            localIdentifier = placeholder?.localIdentifier
+        }, completionHandler: { (success, error) -> Void in
             if success {
-                NSLog("success")
-                //popup alert success
+                let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: localIdentifier);
+                self.commandDelegate!.sendPluginResult(pluginResult, callbackId: command.callbackId);
             }
             else {
-                NSLog("error")
-                //popup alert unsuccess
+                let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: error?.localizedDescription);
+                self.commandDelegate!.sendPluginResult(pluginResult, callbackId: command.callbackId);
             }
-        }
+        })
         
     }
     
