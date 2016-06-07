@@ -24,8 +24,8 @@ exports.convert = function (successCallback, errorCallback, options, frames) {
  * @param {string} filePath - path for video file
  */
 exports.saveVideoToPhotoLibrary = function(successCallback, errorCallback, filePath) {
-    var args = {
-        filePath: filePath
-    };
+    var args = [
+        filePath
+    ];
     exec(successCallback, errorCallback, "MediaKit", "saveVideoToPhotoLibrary", args);
 };
