@@ -1,8 +1,44 @@
 import Foundation
 import AVFoundation
+import Photos
 
 @objc(CDVImageToVideo)
 class CDVImageToVideo: CDVPlugin {
+    
+    func saveVideoToPhotoLibrary(command: CDVInvokedUrlCommand) {
+        NSLog("CDVImageToVideo#saveVideoToPhotoLibrary()")
+        let options = command.argumentAtIndex(0) as! NSDictionary
+        let filePath = String(options["filePath"] as! NSString)
+        NSLog(filePath)
+        
+        if filePath.isEmpty{
+            NSLog("error filePath is empty")
+        }
+        
+        var fileURL = NSURL(string: filePath)!
+        
+        if !fileURL.fileURL {
+            fileURL = NSURL(fileURLWithPath: filePath)
+        }
+        
+        PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
+            
+            let createAssetRequest: PHAssetChangeRequest = PHAssetChangeRequest.creationRequestForAssetFromVideoAtFileURL(fileURL)!
+            createAssetRequest.placeholderForCreatedAsset
+            
+        }) { (success, error) -> Void in
+            if success {
+                NSLog("success")
+                //popup alert success
+            }
+            else {
+                NSLog("error")
+                //popup alert unsuccess
+            }
+        }
+        
+    }
+    
     func convert(command: CDVInvokedUrlCommand) {
         NSLog("CDVImageToVideo#convert()")
         let options = command.argumentAtIndex(0) as! NSDictionary
