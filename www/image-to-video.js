@@ -16,3 +16,16 @@ exports.convert = function (successCallback, errorCallback, options, frames) {
     args.unshift(options);
     exec(successCallback, errorCallback, "ImageToVideo", "convert", args);
 };
+
+/**
+ * save video at filePath to shared Photo Library
+ * @param {function} successCallback - success callback function
+ * @param {function} errorCallback - error callback function
+ * @param {string} filePath - path for video file
+ */
+exports.saveVideoToPhotoLibrary = function(successCallback, errorCallback, filePath) {
+    var args = {
+        filePath: filePath
+    };
+    exec(successCallback, errorCallback, "ImageToVideo", "saveVideoToPhotoLibrary", args);
+};
