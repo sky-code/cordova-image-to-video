@@ -4,7 +4,28 @@ iOS Cordova plugin for converting images (frames) to video written in Swift.
 
 ## Usage
 
-TODO
+```javascript
+var options = {
+    filePath: filePath,
+    width: 320,
+    height: 150,
+    fps: 30
+};
+frames = ["data:image/gif;base64,R0lGODlhMgAyA...", "data:image/gif;base64,R0lGODlhMgAyA..."];
+MediaKit.convert(function (fileUrl) {
+
+            videoPreviewElement.src = fileUrl;
+            videoPreviewElement.play();
+
+            MediaKit.saveVideoToPhotoLibrary(function(videoLocalIdentifier) {
+                                             alert(videoLocalIdentifier);
+            }, function(error) {
+                console.log(error);
+            }, fileUrl);
+        }, function () {
+            console.log(error);
+        }, options, frames);
+```
 
 ## Useful links 
 
